@@ -13,23 +13,33 @@
 
   echo htmlspecialchars($_POST['name']); /* evite que du code soit executé + possibilite d'utiliser fonction strip_tags pour ne pas afficher les balises*/
 /*langaage pcre pour regex (expression regulière)*/
-/*cela permet de valider ou nom une adresse ou un num (bonne ecriture ceux ci)*//*cf openclassroom expression reguliere*/
-if (isset($_POST['mail']))
+/*cela permet de valider ou nom une adresse ou un num (bonne ecriture ceux ci) cf openclassroom expression reguliere*/
+if (isset($_POST['mail'])) /*isset permet de verifier si la variable existe avant de l'executer (=securite) */
 {
   $_POST['mail'] = htmlspecialchars($_POST['mail']);
 
   if (preg_match('#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#', $_POST['mail'])) {
-
-    echo 'L\'adresse :<br/>' .$_POST['mail']. ' est bonne.';
+$_POST['mail'] = preg_replace('#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#', '<a href="$0">$0</a>', $_POST['mail']);
+    echo 'L\'adresse : ' .$_POST['mail']. ' est bonne.<br/>';
   }
   else {
-    echo 'L\'adresse :<br/>'.$_POST['mail'].' n\'est pas bonnne.';
+    echo 'L\'adresse : '.$_POST['mail'].' n\'est pas bonnne.<br/>';
   }
 }
 
+/*remplacement du contenu avec preg_replace*/
+if (isset($_POST['msg'])) {
+  $_POST['msg'] = htmlspecialchars($_POST['msg']);
+  /*utilisation du bbcode (b bold i italique remplace strong et em)*/
+ $_POST['msg'] = preg_replace('#\[b\](.+)\[/b\]#isU', '<strong>$1</strong>', $_POST['msg']);/*s= pour que le point marche mem s'il y a des retours à ligne U= selectionne ouverture et fermeture de [b] et pas premiere ouverture et derniere ouverture*/
+$_POST['msg'] = preg_replace('#\[i\](.+)\[/i\]#isU', '<em>$1</em>', $_POST['msg']);
+$_POST['msg'] = preg_replace('#\[color=(red|green|blue|yellow|purple|olive)\](.+)\[/color\]#isU', '<span style="color:$1">$2</span>', $_POST['msg']);
+ /*convertir les adresse en lien cliquable*/
+ $_POST['msg'] = preg_replace('#http://[a-z0-9._/?+&=;-]+#i', '<a href="$0">$0</a>', $_POST['msg']);
+echo nl2br($_POST['msg']);/*normalement execute les br*/
+}
 
 echo htmlspecialchars($_POST['pseudo']);
-echo htmlspecialchars($_POST['message']);
 echo $_COOKIE['mail'];
   echo $_POST['case'];/*affiche on si cohé*/
 if (isset($_FILES['img']) /*(isset verifie)*/AND $_FILES['img']['error'] == 0)/*s'il y a erreur*/
