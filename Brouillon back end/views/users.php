@@ -12,7 +12,22 @@
 
 
   echo htmlspecialchars($_POST['name']); /* evite que du code soit executé + possibilite d'utiliser fonction strip_tags pour ne pas afficher les balises*/
-echo htmlspecialchars($_POST['mail']);
+/*langaage pcre pour regex (expression regulière)*/
+/*cela permet de valider ou nom une adresse ou un num (bonne ecriture ceux ci)*//*cf openclassroom expression reguliere*/
+if (isset($_POST['mail']))
+{
+  $_POST['mail'] = htmlspecialchars($_POST['mail']);
+
+  if (preg_match('#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#', $_POST['mail'])) {
+
+    echo 'L\'adresse :<br/>' .$_POST['mail']. ' est bonne.';
+  }
+  else {
+    echo 'L\'adresse :<br/>'.$_POST['mail'].' n\'est pas bonnne.';
+  }
+}
+
+
 echo htmlspecialchars($_POST['pseudo']);
 echo htmlspecialchars($_POST['message']);
 echo $_COOKIE['mail'];
