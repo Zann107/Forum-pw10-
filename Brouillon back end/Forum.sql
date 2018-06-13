@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  localhost
--- Généré le :  Dim 10 Juin 2018 à 11:03
+-- Généré le :  Mer 13 Juin 2018 à 10:00
 -- Version du serveur :  5.7.22-0ubuntu0.16.04.1
 -- Version de PHP :  7.0.30-0ubuntu0.16.04.1
 
@@ -17,20 +17,22 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `forum`
+-- Base de données :  `Forum`
 --
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `discussions`
+-- Structure de la table `discussion`
 --
 
-CREATE TABLE `discussions` (
-  `name_discussion` varchar(32) COLLATE utf8_bin NOT NULL,
-  `name_sous-salon` varchar(32) COLLATE utf8_bin NOT NULL,
-  `nbr_message` smallint(5) NOT NULL,
-  `date_creation` datetime NOT NULL
+CREATE TABLE `discussion` (
+  `id_dis` int(11) NOT NULL,
+  `name_discussion` varchar(255) COLLATE utf8_bin NOT NULL,
+  `name_sous_salon` varchar(255) COLLATE utf8_bin NOT NULL,
+  `nbr_post` smallint(5) NOT NULL,
+  `date_creation` datetime NOT NULL,
+  `auteur` varchar(32) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -40,11 +42,11 @@ CREATE TABLE `discussions` (
 --
 
 CREATE TABLE `message` (
-  `id_u` smallint(4) NOT NULL,
-  `name_discussion` varchar(32) COLLATE utf8_bin NOT NULL,
+  `id_post` int(11) NOT NULL,
+  `date_envoi` datetime NOT NULL,
   `pseudo` varchar(32) COLLATE utf8_bin NOT NULL,
-  `contenu` text COLLATE utf8_bin NOT NULL,
-  `date_envoi` datetime NOT NULL
+  `name_discussion` varchar(32) COLLATE utf8_bin NOT NULL,
+  `contenu` text COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -54,7 +56,7 @@ CREATE TABLE `message` (
 --
 
 CREATE TABLE `salon` (
-  `id_salon` smallint(1) NOT NULL,
+  `id_salon` int(1) NOT NULL,
   `name_salon` varchar(32) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -78,26 +80,57 @@ INSERT INTO `salon` (`id_salon`, `name_salon`) VALUES
 --
 
 CREATE TABLE `sous_salon` (
-  `id_salon` smallint(1) NOT NULL,
-  `name_discussion` varchar(32) COLLATE utf8_bin NOT NULL,
-  `name_sous_salon` varchar(32) COLLATE utf8_bin NOT NULL,
-  `nbr_discussion` smallint(5) NOT NULL
+  `id_ss` int(11) NOT NULL,
+  `id_salon` int(11) NOT NULL,
+  `name_sous_salon` varchar(32) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Contenu de la table `sous_salon`
+--
+
+INSERT INTO `sous_salon` (`id_ss`, `id_salon`, `name_sous_salon`) VALUES
+(1, 1, 'salon'),
+(2, 1, 'cuisine'),
+(3, 1, 'chambre'),
+(4, 1, 'salle de bain'),
+(5, 1, 'bureau eclairage'),
+(6, 1, 'électroménager'),
+(7, 1, 'chauffage'),
+(8, 1, 'sécurité'),
+(9, 1, 'jardin'),
+(10, 2, 'beauté'),
+(11, 2, 'régime'),
+(12, 2, 'soleil'),
+(13, 2, 'sport'),
+(14, 3, 'vêtements'),
+(15, 3, 'chaussures'),
+(16, 3, 'ceintures'),
+(17, 3, 'bijoux'),
+(18, 3, 'lunettes'),
+(19, 3, 'montres'),
+(20, 4, 'drône'),
+(21, 5, 'moto'),
+(22, 5, 'voitures'),
+(23, 5, 'trotinettes électriques'),
+(24, 5, 'vélo & accessoires'),
+(25, 6, 'réalité virtuelle'),
+(26, 6, 'vacances'),
+(27, 6, 'jouets'),
+(28, 7, 'insomite');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `users`
+-- Structure de la table `user`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE `user` (
   `id_u` smallint(4) NOT NULL,
-  `name` varchar(32) COLLATE utf8_bin NOT NULL,
   `pseudo` varchar(32) COLLATE utf8_bin NOT NULL,
   `mail` varchar(32) COLLATE utf8_bin NOT NULL,
   `pwd` varchar(32) COLLATE utf8_bin NOT NULL,
-  `age` int(11) NOT NULL,
-  `date_inscription` date NOT NULL,
+  `date_inscription` datetime NOT NULL,
   `admin` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -106,17 +139,16 @@ CREATE TABLE `users` (
 --
 
 --
--- Index pour la table `discussions`
+-- Index pour la table `discussion`
 --
-ALTER TABLE `discussions`
-  ADD PRIMARY KEY (`name_discussion`);
+ALTER TABLE `discussion`
+  ADD PRIMARY KEY (`id_dis`);
 
 --
 -- Index pour la table `message`
 --
 ALTER TABLE `message`
-  ADD PRIMARY KEY (`id_u`,`name_discussion`),
-  ADD KEY `name_discussion` (`name_discussion`);
+  ADD PRIMARY KEY (`id_post`);
 
 --
 -- Index pour la table `salon`
@@ -128,13 +160,12 @@ ALTER TABLE `salon`
 -- Index pour la table `sous_salon`
 --
 ALTER TABLE `sous_salon`
-  ADD PRIMARY KEY (`id_salon`,`name_discussion`),
-  ADD KEY `name_discussion` (`name_discussion`);
+  ADD PRIMARY KEY (`id_ss`);
 
 --
--- Index pour la table `users`
+-- Index pour la table `user`
 --
-ALTER TABLE `users`
+ALTER TABLE `user`
   ADD PRIMARY KEY (`id_u`);
 
 --
@@ -142,33 +173,30 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT pour la table `discussion`
+--
+ALTER TABLE `discussion`
+  MODIFY `id_dis` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT pour la table `message`
 --
 ALTER TABLE `message`
-  MODIFY `id_u` smallint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_post` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT pour la table `users`
+-- AUTO_INCREMENT pour la table `salon`
 --
-ALTER TABLE `users`
-  MODIFY `id_u` smallint(4) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `salon`
+  MODIFY `id_salon` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
--- Contraintes pour les tables exportées
---
-
---
--- Contraintes pour la table `message`
---
-ALTER TABLE `message`
-  ADD CONSTRAINT `message_ibfk_1` FOREIGN KEY (`id_u`) REFERENCES `users` (`id_u`),
-  ADD CONSTRAINT `message_ibfk_2` FOREIGN KEY (`name_discussion`) REFERENCES `discussions` (`name_discussion`);
-
---
--- Contraintes pour la table `sous_salon`
+-- AUTO_INCREMENT pour la table `sous_salon`
 --
 ALTER TABLE `sous_salon`
-  ADD CONSTRAINT `sous_salon_ibfk_1` FOREIGN KEY (`id_salon`) REFERENCES `salon` (`id_salon`),
-  ADD CONSTRAINT `sous_salon_ibfk_2` FOREIGN KEY (`name_discussion`) REFERENCES `discussions` (`name_discussion`);
-
+  MODIFY `id_ss` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+--
+-- AUTO_INCREMENT pour la table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id_u` smallint(4) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
